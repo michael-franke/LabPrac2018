@@ -10,8 +10,7 @@ during this course, based on a replication of an existing experiment, which we w
 session | day | topic | material
 :--- | :--- | :--- | :---
 1  | April 12 | introduction | [handout](handouts/01_intro.pdf), [slides](slides/01_RePOS_intro.pdf)
-2  | April 19 | tidy cooperation ::: git ::: markdown | [git](https://git-scm.com/),
-[markdown](https://guides.github.com/features/mastering-markdown/), [slides](slides/02_tidy_cooperation.pdf)
+2  | April 19 | tidy cooperation ::: git ::: markdown | [git](https://git-scm.com/), [markdown](https://guides.github.com/features/mastering-markdown/), [slides](slides/02_tidy_cooperation.pdf)
 3  | April 26 | HTML, CSS & JS ::: \_babe | [\_babe](https://babe-project.github.io/babe_site/index.html)
 4  | May 03 | offline deployment in \_babe ::: tidy data in R | [\_babe](https://babe-project.github.io/babe_site/index.html), [R4DS](http://r4ds.had.co.nz)
 5  | May 17 | more tidyverse ::: stats ::: Rmarkdown | [R4DS](http://r4ds.had.co.nz)
