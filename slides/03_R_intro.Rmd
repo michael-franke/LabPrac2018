@@ -287,8 +287,6 @@ grades = tibble(name = c('Michael', 'Noa', 'Obioma'),
 grades
 ```
 
-<span style = "color:white"> &nbsp; </span>
-
 to tidy up, we need to <span style = "color:firebrick">gather</span> columns which are not variables into a new column
 
 ```{r}
@@ -305,8 +303,6 @@ results = tibble(name = c('Michael', 'Noa', 'Obioma', 'Michael', 'Noa', 'Obioma'
                  howmuch = c(3.7, 1.0, 1.0, 55, 99, 99))
 results
 ```
-
-<span style = "color:white"> &nbsp; </span>
 
 to tidy up, we need to <span style = "color:firebrick">spread</span> cells from a row out over several columns
 
