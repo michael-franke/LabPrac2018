@@ -1,0 +1,235 @@
+---
+title: "Experimental report: feature integration theory"
+output: html_document
+---
+
+We replicated experiment 1 of Treismann & Gelade (1980). The experiment is intended to test two predictions of feature-integration theory concerning visual search:
+
+1. target items that are uniquely distinguished from co-present distractor items by a single feature dimension **pop-out** and can be found quickly without (larger) interference from a higher number of distractor items
+
+2. target items that are only uniquely distinguished from co-present distractor items by a conjuction of features require attentional binding of features during a linear scan of the spatial master map, so that search times should be linearly increasing in the number of distractor items
+
+## Design
+
+Participants see displays of colored letters. Displays vary in *size*, i.e., the total number of colored letters. Participants are asked to search the display for a target which is specified by a verbal description before the visual display is shown. The target is in the display (so-called *positive trials*) or it is not (so-called *negative trials*). If they find the target, participants press a response button (either J or F) with their dominant/writing hand; if they are convinced that the target is absent from the display, they press the button (J or F) associated with their non-dominant hand. Participants are instructed to be as accurate and as fast as possible. After each trial, they see a feedback screen showing whether the last answer was correct, the reaction time for the last trial, as well as their current percentage of correct answers and the current mean reaction time over all trials so far.
+
+There are two types of theoretically interesting conditions. On *feature trials* participants look for a target which distinguishes itself in a single feature dimension (color or letter type) from all of the present *distractors*. On *conjunction trials*, the target shares one feature (color or letter type) with all the distractors, but is distinguished as the only element that has both features at the same time.
+
+## Materials
+
+Visual displays consist of colored letters. Distractors are the same for both feature trials and conjunction trials, namely brown T's and green X's. The size of a display is either 1, 5, 15 or 30. On positive trials, where the target is in the display, the distractors (if there are any) consists in equal proportion of brown T's and green X's. On negative trials, there is a random choice to fill up the display with an additional brown T or an additional green X.
+
+In feature trials, participants are instructed to search for a blue letter or the letter S. So the single target in any positive feature trial is a random choice of: (i) a blue T, (ii) a blue X, (iii) a brown S, or (iv) a green S. (There is always only one target and participants should click the button as soon as they have found it, but participants are not told that they will be looking for a blue letter in the next trial, not a letter S; they will always be instructed to look for either a blue letter or a letter S.)
+
+In condition trials, the target is always a green T.
+
+On each trial letters are placed on completely random positions on a grid. (E.g.: associate the whole canvas with cells, number them according to their position, draw the required number of positions (without replacement) and place the letters there.)
+
+## Procedure
+
+Participants must first answer whether their dominant hand is left or right. If it is right, they should press button J when they have found the target, and F otherwise. If their dominant hand is left, they should respond with the reverse assignment of buttons.
+
+After explaining the task, there will be 16 practice trials in which feedback on response accuracy and speed is given already. The 16 practice trials are a random shuffle of all 16 logical conditions (4 sizes, present vs absent, conjunction vs feature). Then there are 32 main trials, before a final post-test survey. The 32 main trials are two repetitions of random shuffles of all 16 logically possible conditions.
+
+Practice and main trials are exactly identical. On each trial, participants see a *pause screen* (with just "PAUSE") on the screen. By clicking either F, J or SPACE (or, alternatively, any button whatsoever), they proceed to a *"get ready" screen* with a count down, starting at 2, then after one second showing 1, then showing a fixation cross for another second in the middle of the where the display (canvas) will appear next. Reaction times are measured form the onset of the visual display. After a button response, participants go the *feedback screen* where they see whether their last answer was correct and what their reaction time was. After a button click, they go to the next round starting with a *pause screen*.
+
+Every trial (both practice and main) is a completely random choice of positive/negative, feature/conjunction condition and a total random choice of *size*.
+
+
+## Data preparation & exploration
+
+[From here on, the writing style switches to something like an internal report that also shows steps of the analyses, e.g., for your colleagues; this is **not** how you would write a research paper!]
+
+First we load some necessary packages:
+
+```{r, warning= FALSE, message = FALSE}
+library('tidyverse')
+library('bootstrap') # bootstrapped confidence intervals
+library('lme4') # generalized linear models with random effects
+```
+
+Read, massage and filter the data (only main trials):
+
+```{r, warning= FALSE, message = FALSE}
+d = readr::read_csv('../data/01_FeatureIntegration.csv') %>% 
+  mutate(condition = factor(condition, ordered = T, levels = c("feature", "conjunction"))) %>% 
+  filter(trial_type == "main")
+```
+
+There was a total of `r nlevels(factor(d$id))` participants. Participants self-identified as having different educational backgrounds:
+
+```{r}
+d %>% group_by(education) %>% summarize(x = n()/max(trial_number))
+```
+
+
+
+Add mean correctness scores and mean RTs for each participant:
+
+```{r}
+d = d %>% group_by(id) %>% 
+  mutate(correctnessScore = mean(ifelse(correctness == 'correct', 1, 0)),
+         meanRTind = mean(RT)) 
+```
+
+The average mean correctness score is `r with(d, table(correctness)/nrow(d))[1] %>% round(2)`. The average reaction time is `r mean(d$RT) %>% round(2)`.
+
+We store averages into variables:
+
+```{r}
+# overall mean correctness scores
+overallCorrect = with(d, table(correctness)/nrow(d))[1]
+
+# overall mean RT scores
+overallRT = mean(d$RT)
+```
+
+Next, we look at all participants' individual mean reaction times. We compute an upper bound on these based on a bootstrapped 95% quantile:
+
+```{r}
+# upper bound on mean individual RTs from bootstrapped 95% confidence interval
+RTs = d %>% group_by(id) %>% summarize(RT = mean(meanRTind)) %>% select(RT)
+meanRT = mean(RTs$RT)
+RTUpperBound = mean(bootstrap(as.vector(RTs$RT), n = 1000, theta = function(x) {quantile(x,.95)})$thetastar)
+```
+
+We also compute a lower bound on individual correctness scores, based on a bootstrapped 5% quantile:
+
+```{r}
+# lower bound on mean individual correctness scores from bootstrapped 95% confidence interval
+scores = d %>% group_by(id) %>% summarize(score = mean(correctnessScore)) %>% select(score)
+meanScore = mean(scores$score)
+scoreLowerBound = mean(bootstrap(as.vector(scores$score), n = 1000, theta = function(x) {quantile(x,.05)})$thetastar)
+```
+
+We can then plot the distribution of reaction times over individuals:
+
+```{r}
+ggplot(d %>% group_by(id, education) %>% summarize(toPlot = mean(meanRTind)), 
+       aes(x = fct_reorder(factor(id), toPlot), y = toPlot, fill = education)) + 
+  geom_bar(stat = 'identity') + xlab("participant") + ylab("mean RT (ms)") +
+  scale_fill_manual(values=c("#B3BFB4", "#97A799", "#5C7660", "firebrick")) +
+  theme_classic() + 
+  theme(legend.position = "bottom", 
+        axis.line = element_line(color = "#5C7660"),
+        legend.key.height = unit(2,"line"),
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.text = element_text(size = 16),
+        legend.background = element_rect(fill = "transparent"),
+        strip.background = element_blank(),
+        panel.spacing = unit(2, "lines"),
+        panel.border = element_blank(),
+        plot.background = element_rect(fill = "transparent", colour = NA),
+        panel.background = element_rect(fill = "transparent"),
+        strip.text.x = element_text(size = 18),
+        axis.ticks.y = element_line(colour = '#5C7660'),
+        axis.ticks.x = element_line(colour = 'white'),
+        axis.text.y = element_text(size = 9, color = "#5C7660"),
+        axis.text.x = element_text(size = 0, color = "#5C7660"),
+        axis.title = element_text(size = 18, face = "bold", color = "#515B53"),
+        plot.title = element_text(size = 18, face = "bold"),
+        plot.margin=unit(c(1,1,1.5,1.2),"cm")) +
+  geom_hline(aes(yintercept = overallRT)) + 
+  geom_hline(aes(yintercept = RTUpperBound)) +
+  geom_text(aes(x = 25, y = overallRT + 50, label = "mean", angle = 0)) +
+  geom_text(aes(x = 25, y = RTUpperBound + 50, label = "95% CI", angle = 0))
+```
+
+And similarly, we can plot the distribution over each individual's correctness score:
+
+```{r}
+ggplot(d %>% group_by(id , education) %>% summarize(toPlot = mean(correctnessScore)), 
+       aes(x = fct_reorder(factor(id), -toPlot), y = toPlot * 100, fill = education)) + 
+  geom_bar(stat = 'identity') + xlab("participant") + ylab("percent correct") +
+  scale_fill_manual(values=c("#B3BFB4", "#97A799", "#5C7660", "firebrick")) +
+  theme_classic() + 
+  theme(legend.position = "bottom", 
+        axis.line = element_line(color = "#5C7660"),
+        legend.key.height = unit(2,"line"),
+        legend.title = element_text(size = 16, face = "bold"),
+        legend.text = element_text(size = 16),
+        legend.background = element_rect(fill = "transparent"),
+        strip.background = element_blank(),
+        panel.spacing = unit(2, "lines"),
+        panel.border = element_blank(),
+        plot.background = element_rect(fill = "transparent", colour = NA),
+        panel.background = element_rect(fill = "transparent"),
+        strip.text.y = element_text(size = 18),
+        axis.ticks.y = element_line(colour = '#5C7660'),
+        axis.ticks.x = element_line(colour = 'white'),
+        axis.text.y = element_text(size = 9, color = "#5C7660"),
+        axis.text.x = element_text(size = 0, color = "#5C7660"),
+        axis.title = element_text(size = 18, face = "bold", color = "#515B53"),
+        plot.title = element_text(size = 18, face = "bold"),
+        plot.margin=unit(c(1,1,1.5,1.2),"cm")) +
+  geom_hline(aes(yintercept = meanScore * 100)) +
+  geom_hline(aes(yintercept = scoreLowerBound * 100)) +
+  geom_text(aes(x = 110, y = meanScore * 100 + 5, label = "mean", angle = 0)) +
+  geom_text(aes(x = 22, y = scoreLowerBound * 100 - 5, label = "95% CI", angle = 0))
+```
+
+
+## Data cleaning & summary statistics
+
+We remove all participants whose mean RTs are above the bootstrapped 95% quantile and whose mean correctness scores are below the bootstrapped 5% bar. (This is crude and arbitrary here; ideally, we specify exclusion criteria *before* having seen any data based on a strong theoretical motivation.)
+
+```{r}
+d = d %>% 
+  filter(meanRTind < RTUpperBound & correctnessScore > scoreLowerBound)
+```
+
+Let's then have a look at some summary statistics, which we will also use for plotting:
+
+```{r}
+dsummary = d %>% group_by(trial,size,condition) %>% 
+  summarize(meanRT = mean(RT),
+            minCI = mean(bootstrap(RT, 1000, theta = function(x) {quantile(x,.05)})$thetastar),
+            maxCI = mean(bootstrap(RT, 1000, theta = function(x) {quantile(x,.95)})$thetastar)) %>% 
+  ungroup() %>% 
+  mutate(trial = factor(trial))
+dsummary
+```
+
+## Data plotting
+
+The predictions we would like to test are about a functional relationship between reaction times (as dependent or to-be-explained variable) and the `trial` type (single feature vs. conjunction of features) as well as the `size` of the display (i.e., the number of distractor items). So we would like to have a plot that displays mean RTs independently for each trial type and size configuration, like so:
+
+```{r}
+ggplot(dsummary, aes(y = meanRT, x = size, color = trial)) + 
+  geom_point()  + geom_line() +
+  # geom_errorbar(aes(x = size, ymin = minCI, ymax = maxCI), width = 0.2) +
+  facet_grid(~ condition) +
+  scale_color_manual(values=c("darkgrey", "firebrick")) +
+  scale_x_continuous(breaks = c(1,5,15,30)) + 
+  theme_classic() + 
+  theme(legend.position = "bottom", 
+        axis.line = element_line(color = "#5C7660"),
+        legend.key.height = unit(1,"line"),
+        legend.title = element_text(size = 0, face = "bold"),
+        legend.text = element_text(size = 12),
+        legend.background = element_rect(fill = "transparent"),
+        strip.background = element_blank(),
+        panel.spacing = unit(2, "lines"),
+        panel.border = element_blank(),
+        plot.background = element_rect(fill = "transparent", colour = NA),
+        panel.background = element_rect(fill = "transparent"),
+        strip.text.y = element_text(size = 18),
+        axis.ticks = element_line(colour = '#5C7660'),
+        axis.text = element_text(size = 9, color = "#5C7660"),
+        axis.title = element_text(size = 12, face = "bold", color = "#515B53"),
+        plot.title = element_text(size = 18, face = "bold"),
+        plot.margin=unit(c(1,1,1.5,1.2),"cm"))
+```
+
+
+## Statistical analysis
+
+Feature-integration theory predicts that `size` should have an effect mainly/only in positive conjunction trials, but not in positive feature trials. We can test this prediction by a linear regression model, which focusses on the positive trials (i.e., where the target was present) and checks whether the independent/explanatory variables `size` and `condition` have a significant effect. We are also interested in the interaction between `size` and `conjunction`. We regress log-RTs, not RTs, to make sure that the dependent variable is approximately normally distributed.
+
+```{r}
+model = glm(log(RT) ~ condition * (size -1) , data = filter(d, trial == "positive"))
+summary(model)
+```
+
+We conclude from this analysis that `size` had an influence on both feature and conjunction trials. Based on the estimates for the slope coefficients (and by looking at our previous plot) and the significance of the interaction term, we can also conclude that the impact of increasing `size` is stronger in the conjunction condition.
+

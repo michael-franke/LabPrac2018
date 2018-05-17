@@ -13,7 +13,7 @@ session | day | topic | material
 2  | April 19 | tidy cooperation ::: git ::: markdown | [git](https://git-scm.com/), [markdown](https://guides.github.com/features/mastering-markdown/), [slides](slides/02_tidy_cooperation.pdf)
 3  | April 26 | HTML, CSS & JS ::: \_babe | [\_babe](https://babe-project.github.io/babe_site/index.html)
 4  | May 03 | data wrangling & visualizing in R | [slides](slides/03_R_intro.html), [R4DS](http://r4ds.had.co.nz)
-5  | May 17 | more tidyverse ::: stats ::: Rmarkdown | [R4DS](http://r4ds.had.co.nz)
+5  | May 17 | more R ::: Rmarkdown ::: reporting an experiment | [slides](slides/04_statsEtc.html) [example](handouts/02_expReport.html)
 6  | May 24 | crowd-sourcing ::: online deployment in \_babe | 
 7  | May 31 |  project presentations | 
 
