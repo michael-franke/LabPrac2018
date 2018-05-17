@@ -42,7 +42,7 @@ Every trial (both practice and main) is a completely random choice of positive/n
 
 First we load some necessary packages:
 
-```{r, warning= FALSE, message = FALSE}
+```{r, echo = TRUE, warning= FALSE, message = FALSE}
 library('tidyverse')
 library('bootstrap') # bootstrapped confidence intervals
 library('lme4') # generalized linear models with random effects

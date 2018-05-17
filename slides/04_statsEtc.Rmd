@@ -58,7 +58,10 @@ theme_set(theme_bw() + theme(plot.background=element_blank()) )
 
 ## Job description
 
-- concretely, on each trial:
+
+use the CanvasTemplate, available here: [https://github.com/babe-project/CanvasTemplate](https://github.com/babe-project/CanvasTemplate)
+
+- adapt it to do the following, on each trial:
 	- sample `total_set_size` from {10,25,50} and a non-zero `focal_set_size` of at most `total_set_size`
 	- choose a random `shape` from {circle, square, triangle}
 	- display `focal_set_size` of `shape` in the `focal_color`, the rest
@@ -67,12 +70,12 @@ theme_set(theme_bw() + theme(plot.background=element_blank()) )
 	- dynamically construct the sentence to be judged/rated as: "Some of the `shape`s are `focal_color`."
 	- record all relevant random choices for each trial's picture
 
+
+
+
 ## Canvas template
 
-- obtain from: [https://github.com/babe-project/CanvasTemplate](https://github.com/babe-project/CanvasTemplate)
-
 - in `index.html`:
-
 ```{HTML}
 <div class="stimulus-container">
 	<canvas id="canvas" height="400" width="600"></canvas>
@@ -80,23 +83,18 @@ theme_set(theme_bw() + theme(plot.background=element_blank()) )
 ```
 
 - in `helpers.js`:
-
 ```{javascript}
 var drawOnCanvas = function(canvasElem, trialInfo) {
     var canvas = createCanvas(document.getElementById('canvas')); // defined in scripts/canvas.js
     var coords = canvas.getCoords(trialInfo.total, trialInfo.size);
     for (var i=0; i<trialInfo.total; i++) {
-        if (i < trialInfo.focalNumber) {
-            canvas.draw(trialInfo.focalShape, trialInfo.size, coords[i].x, coords[i].y, trialInfo.focalColor);
-        } else {
-            canvas.draw(trialInfo.otherShape, trialInfo.size, coords[i].x, coords[i].y, trialInfo.otherColor);
-        }
+        if (i < trialInfo.focalNumber) { canvas.draw(trialInfo.focalShape, trialInfo.size, coords[i].x, coords[i].y, trialInfo.focalColor); } 
+        else { canvas.draw(trialInfo.otherShape, trialInfo.size, coords[i].x, coords[i].y, trialInfo.otherColor); }
     }
 };
 ```
 
 - in `views.js`:
-
 ```{javascript}
 drawOnCanvas(document.getElementById('canvas'), exp.trial_info.main_trials[CT]);
 ```
@@ -112,7 +110,7 @@ drawOnCanvas(document.getElementById('canvas'), exp.trial_info.main_trials[CT]);
     - simplifies a reproducible work flow
 
 <div align = 'center'>
-  <img src="pics/Rmarkdown.dms" alt="Rmarkdown" style="width: 500px;"/>
+  <img src="pics/Rmarkdown.dms" alt="Rmarkdown" style="width: 350px;"/>
 </div>
 
 # How to report an experiment
@@ -120,8 +118,7 @@ drawOnCanvas(document.getElementById('canvas'), exp.trial_info.main_trials[CT]);
 ## APA guidelines to structure experiment reports (roughly)
 
 - (optional) **motivation/design** 
-    - say what kind of experiment this is (e.g., between vs. within-subject design)
-    - explain motivation for the particular choice (often clear from introduction or preceeding context)
+    - what kind of experiment (e.g., between vs. within-subject design) and why
     
 - **participants**
     - how many participants were recruited how/from where; gender distribution; age; payment etc.
@@ -129,11 +126,14 @@ drawOnCanvas(document.getElementById('canvas'), exp.trial_info.main_trials[CT]);
 - **materials & apparatus**
     - which pictures/sentences/instructions/machinery was used (e.g., which eye-tracker, ...)
 
+- **procedure**
+    - how the experiment was structured, how many trials of which kind in which order etc.
+
 - (optional) **analysis** (also sometimes referred to as 'design')
     - what are the dependent and independent variables used for statistical analysis
 
 - (optional) **data preparation**
-    - what you did to the data before you started statistical analyses, e.g., data cleaning, variable transformation
+    - data manipulation before further analyses, e.g., data cleaning, variable transformation
     
 - **results**
     - summary statistics (e.g., mean error rates), plots & analyses (e.g., $p$-values)
