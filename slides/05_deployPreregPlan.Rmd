@@ -1,0 +1,198 @@
+---
+title: "Deployment, preregistration & a plan of action"
+author: "Michael Franke"
+output:
+  revealjs::revealjs_presentation:
+    theme: white 
+    highlight: pygments
+    center: false
+    transition: none
+    background_transition: none
+    css: mireveal.css
+    smaller: true
+    includes:
+      after_body: mireveal_includes.html
+---
+
+```{r setup, include=FALSE, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(echo=TRUE, warning=FALSE, message=FALSE, dev.args = list(bg = 'transparent'), fig.align='center')
+require('tidyverse')
+theme_set(theme_bw() + theme(plot.background=element_blank()) )
+```
+
+## road map for today
+
+<span style = "color:white"> &nbsp; </span>
+
+- your experiment (on 'some')
+
+<span style = "color:white"> &nbsp; </span>
+
+- deployment in _babe
+
+<span style = "color:white"> &nbsp; </span>
+
+- preregistration @ OSF
+    
+<span style = "color:white"> &nbsp; </span>
+
+- plan of action for group projects
+
+# your experiment on 'some' so far
+
+## example implementation
+
+<span style = "color:white"> &nbsp; </span>
+
+an example implementation is available here:
+
+[link](me)
+
+# deployment in _babe
+
+## deployment in _babe
+
+deployment := handling results & recruiting participants
+
+<span style = "color:white"> &nbsp; </span>
+
+<span style = "color:white"> &nbsp; </span>
+
+1. **debug mode:**
+    - execute experiment locally in your browser
+    - show results of in HTML-table in browser
+
+<span style = "color:white"> &nbsp; </span>
+
+
+2. **live experiment:**
+    - experiment is hosted on a web-server
+    - anyone can follow a link to do the experiment
+        - possibly: participants are recruited and reimbursed via crowd-sourcing platform
+    - experimental results are stored in and retrieved from a database using the [_babe server app](https://github.com/babe-project/BABE)
+
+## going live with _babe
+
+content of `MinimalTemplate/config/config_deploy.js`
+
+```javascript
+var config_deploy = {
+    // obligatory fields
+	
+    // the experimentID is needed to recover data from the _babe server app
+	  // you receive the experimentID when you create the experiment using the _babe server app
+	  "experimentID": "8",
+
+    // set deployment method; use one of:
+    //'debug', 'localServer', 'MTurk', 
+    // 'MTurkSandbox', 'Prolific', 'directLink'
+    "deployMethod" : "directLink", 
+    
+    // optional fields
+    
+    // who to contact in case of trouble
+    "contact_email": "YOUREMAIL@wherelifeisgreat.you", 
+};
+```
+
+relevant for us are:
+
+1. `localServer` &
+2. `directLink`
+
+## using the `directLink` method
+
+<span style = "color:white"> &nbsp; </span>
+
+use `directLink` for experiments where participants receive a link and work from wherever they are; results are submitted to and retrieved from a database via the internet
+
+<span style = "color:white"> &nbsp; </span>
+
+- use our installation of the _babe backend on Heroku
+    - you will receive a password for this when the time comes
+- set `deployMethod: "directLink"`
+- visit the _babe server app at [https://babe-backend.herokuapp.com/](https://babe-backend.herokuapp.com/) & create a new experiment
+    - note the experimentID that is automatically asigned & enter it in `config_deploy.js`
+    - the experiment must be set to live mode in the server app (otherwise it refuses data submissions)
+- retrieve your results in the browser at address [https://babe-backend.herokuapp.com/](https://babe-backend.herokuapp.com/)
+- alternatively: install your own instance of the server app as explained here: [_babe backend Heroku installation](https://babe-project.github.io/babe_site/docs/deployment.html#online-server-deployment-instructions-with-heroku)
+    - in this case, change the address to your server app instance in `scripts/main.js`
+
+## using the `localServer` method
+
+<span style = "color:white"> &nbsp; </span>
+
+use `localServer` for experiments where participants are physically present and use your computer (e.g., in the lab or in the field); results are stored on a local database (no internet connection required)
+
+<span style = "color:white"> &nbsp; </span>
+
+- install the _babe backend locally on the computer where participants do the experiment
+    - follow installation instructions here: [_babe backend local installation](https://babe-project.github.io/babe_site/docs/deployment.html#local-server-deployment-instructions-with-docker)
+- set `deployMethod: "localServer"`
+- visit the _babe server app at `localhost:4000` & create a new experiment
+    - note the experimentID that is automatically asigned & enter it in `config_deploy.js`
+    - the experiment must be set to live mode in the server app (otherwise it refuses data submissions)
+- retrieve your results in the browser at address `localhost:4000`
+
+<span style = "color:white"> &nbsp; </span>
+
+# preregistration reports
+
+## preregistration reports
+
+<span style = "color:white"> &nbsp; </span>
+
+irrevocable public commitment to experimental design/materials/procedure and statistical analysis
+
+<span style = "color:white"> &nbsp; </span>
+
+two kinds of analyses (to be distinguished clearly in your paper/report):
+
+1. **confirmatory:**
+    - the experiment was conducted with the intention to test a hypothesis
+        - ideally preregister this!
+        
+<span style = "color:white"> &nbsp; </span>
+        
+        
+2. **exploratory:**
+    - explore your data to generate new hypotheses
+        - if anything interesting comes up: preregister and run a new study to test the new hypothesis
+
+
+## two kinds of preregistration reports
+
+<span style = "color:white"> &nbsp; </span>
+
+
+1. **peer-reviewed preregistration:**
+    - journal reviewers decide whether your paper will be published based on your preregistration report
+
+<span style = "color:white"> &nbsp; </span>
+
+
+2. **simple preregistration:**
+    - just commit in public using a suitable platform, e.g., from the [Open Science Foundation](https://osf.io)
+    - this is what we will use
+    - concretely, use the **OSF preregistration challenge format** for your preregistration report
+        - template can be downloaded here: [GoogleDoc PreReg challenge template](https://docs.google.com/document/d/1T25vXrpsHS8NzRsvNhqIPK1LgYYtoN8jFF_iyLedM-s/template/preview?usp=drive_web&ouid=%7BuserId%7D)
+  
+
+
+    
+# plan of action
+
+## plan of action for your group project
+
+1. team up, find topic, divide roles
+2. visit us with a preliminary plan, which we will make more concrete together
+    - which study, which materials, how to realize (lab or online, ...)
+3. make a schedule and communicate it with us
+4. plan & implement experiment
+5. pilot your experiment for debugging (2-3 participants (this could be you!))
+6. implement statistical analyses based on debug-pilot data
+7. write preregistration report
+    - include analyses scripts
+    - wait for feedback from us before continuing
+8. run experiment
+9. write paper
