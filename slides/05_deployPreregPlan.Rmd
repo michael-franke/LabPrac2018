@@ -46,7 +46,7 @@ theme_set(theme_bw() + theme(plot.background=element_blank()) )
 
 an example implementation is available here:
 
-[link](me)
+[QuantifierNaturalness](https://github.com/babe-project/QuantifierNaturalness)
 
 # deployment in _babe
 
