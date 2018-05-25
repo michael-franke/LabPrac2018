@@ -103,3 +103,22 @@ buttons based on the probability with which they expect a reward.
 | Difficulty | easy (experiment); possibility to go deeper into modeling the data |
 | Group | 2 |
 
+&nbsp;
+
+
+### Judgements for sentences with presupposition failures
+
+A presupposition is a piece of information in a sentences which is communicated as true and
+crucial for the sentence to make sense. If Jones says: "The king of France is bald." this
+sentences presupposes (at least) that there is a king of France. This paper investigates how
+people judge sentences where a crucial presupposition is false (so-called presupposition failure).
+
+
+| &nbsp;     | |
+| :--- | :--- |
+| Authors | Márta Abrusán & Kriszta Szendröi |
+| Title | [Experimenting with the king of France: Topics, verifiability and definite descriptions](http://dx.doi.org/10.3765/sp.6.10) |
+| Keywords | linguistic judgements, presuppositions, truth-values, philosophy of language |
+| Challenge | compare 3-button judgements to 1-7 rating scale (if enough participants); extend to different presupposition triggers |
+| Difficulty | easy (experiment); medium (material creation) |
+| Group | 2-3 |
