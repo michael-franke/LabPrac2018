@@ -122,3 +122,5 @@ people judge sentences where a crucial presupposition is false (so-called presup
 | Challenge | compare 3-button judgements to 1-7 rating scale (if enough participants); extend to different presupposition triggers |
 | Difficulty | easy (experiment); medium (material creation) |
 | Group | 2-3 |
+
+
